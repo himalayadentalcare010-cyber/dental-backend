@@ -1,0 +1,171 @@
+const path = require('path');
+const sharp = require('sharp');
+const { PrismaClient } = require('@prisma/client');
+const cloudinary = require('../utils/cloudinary');
+const { sizePresets, qualityPresets } = require('../constant/constant');
+
+const prisma = new PrismaClient();
+
+const isValidString = (str) => typeof str === 'string' && str.trim().length > 0;
+
+exports.createBanner = async (req, res) => {
+  try {
+    const { title, description, tag, width, height } = req.body;
+    const file = req.file;
+
+    if (!file) return res.status(400).json({ error: 'Image required' });
+    if (!isValidString(title) || !isValidString(description) || !isValidString(tag)) {
+      return res.status(400).json({ error: 'Title, description, and tag are required' });
+    }
+
+    const size = sizePresets[tag] || {
+      width: parseInt(width) || 800,
+      height: parseInt(height) || 400,
+    };
+    const quality = qualityPresets[tag] || 80;
+
+    const buffer = await sharp(file.buffer)
+      .resize(size.width, size.height)
+      .jpeg({ quality: quality })
+      .toBuffer();
+
+    const uploadToCloudinary = async (buffer, filename) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            resource_type: 'image',
+            folder: 'banners',
+            public_id: filename,
+          },
+          (err, result) => {
+            if (err) reject(err);
+            else resolve(result);
+          }
+        );
+        stream.end(buffer);
+      });
+    };
+
+    const filename = `banner-${Date.now()}`;
+    const cloudinaryRes = await uploadToCloudinary(buffer, filename);
+
+    const banner = await prisma.banner.create({
+      data: {
+        title,
+        description,
+        tag,
+        image: cloudinaryRes.secure_url,
+        publicId: cloudinaryRes.public_id,
+      },
+    });
+
+    res.json(banner);
+  } catch (error) {
+    console.error('createBanner error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getBanners = async (_, res) => {
+  try {
+    const banners = await prisma.banner.findMany();
+    res.json(banners);
+  } catch (error) {
+    console.error('getBanners error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.getBanner = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+
+    const banner = await prisma.banner.findUniqueOrThrow({
+      where: { id },
+    });
+
+    res.json(banner);
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Banner not found' });
+    }
+    console.error('getBanner error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.updateBanner = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+
+    const { title, description, tag, width, height } = req.body;
+    if (!isValidString(title) || !isValidString(description) || !isValidString(tag)) {
+      return res.status(400).json({ error: 'Title, description, and tag are required' });
+    }
+
+    const existing = await prisma.banner.findUniqueOrThrow({ where: { id } });
+
+    let image = existing.image;
+    let publicId = existing.publicId;
+
+    if (req.file) {
+      // Delete old image from Cloudinary
+      if (publicId) {
+        await cloudinary.uploader.destroy(publicId).catch(() => {});
+      }
+
+      const size = sizePresets[tag] || {
+        width: parseInt(width) || 800,
+        height: parseInt(height) || 400,
+      };
+
+      const buffer = await sharp(req.file.buffer)
+        .resize(size.width, size.height)
+        .jpeg({ quality: 80 })
+        .toBuffer();
+
+      const filename = `banner-${Date.now()}`;
+      const cloudinaryRes = await uploadToCloudinary(buffer, filename);
+
+      image = cloudinaryRes.secure_url;
+      publicId = cloudinaryRes.public_id;
+    }
+
+    const updated = await prisma.banner.update({
+      where: { id },
+      data: { title, description, tag, image, publicId },
+    });
+
+    res.json(updated);
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Banner not found' });
+    }
+    console.error('updateBanner error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+exports.deleteBanner = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+
+    const banner = await prisma.banner.findUniqueOrThrow({ where: { id } });
+
+    if (banner.publicId) {
+      await cloudinary.uploader.destroy(banner.publicId).catch(() => {});
+    }
+
+    await prisma.banner.delete({ where: { id } });
+    res.json({ success: true });
+  } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ error: 'Banner not found' });
+    }
+    console.error('deleteBanner error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
