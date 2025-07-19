@@ -1,90 +1,80 @@
 const express = require('express');
 const router = express.Router();
 const { requireAuth } = require('../middlewares/auth.middleware');
-
-const controller = require('../controllers/banner.controller');
-
 const upload = require('../middlewares/upload.middleware');
 
-router.get('/paginated', controller.getPaginatedBanners);
+const controller = require('../controllers/blogs.controller');
 
-router.get('/', controller.getBanners);
-router.get('/:id', controller.getBanner);
-router.post('/', requireAuth, upload.single('image'), controller.createBanner);
-router.put('/:id', requireAuth, controller.updateBanner);
-router.delete('/:id', requireAuth, controller.deleteBanner);
+router.get('/paginated', controller.getPaginatedBlogs);
+
+router.get('/', controller.getBlogs);
+router.get('/:id', controller.getBlog);
+router.post('/', requireAuth, upload.single('image'), controller.createBlog);
+router.put('/:id', requireAuth, upload.single('image'), controller.updateBlog);
+router.delete('/:id', requireAuth, controller.deleteBlog);
 
 module.exports = router;
 
 /**
  * @swagger
  * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- *
- * security:
- *   - bearerAuth: []
- */
-
-/**
- * @swagger
- * components:
  *   schemas:
- *     Banner:
+ *     Blog:
  *       type: object
  *       required:
  *         - title
  *         - description
- *         - tag
+ *         - tags
  *         - image
  *       properties:
  *         id:
  *           type: integer
- *           description: The auto-generated ID of the banner
+ *           description: Auto-generated ID
  *         title:
  *           type: string
- *           description: Banner title
+ *           description: Blog title
  *         description:
  *           type: string
- *           description: Banner description
- *         tag:
- *           type: string
- *           description: Banner tag
+ *           description: Blog content
+ *         tags:
+ *           type: array
+ *           items:
+ *             type: string
+ *           description: Blog tags
  *         image:
  *           type: string
- *           description: Filename of the banner image
+ *           description: Image URL
  *       example:
  *         id: 1
- *         title: "Summer Sale"
- *         description: "Huge discounts on all items"
- *         tag: "sale"
- *         image: "banner1.jpg"
+ *         title: "How to Start a Garden"
+ *         description: "Beginner tips for starting your first garden."
+ *         tags: ["gardening", "beginner", "outdoor"]
+ *         image: "https://res.cloudinary.com/your-cloud/image/upload/v123/blog.jpg"
  */
 
 /**
  * @swagger
- * /banners:
+ * /blogs:
  *   get:
- *     summary: Get all banners
- *     tags: [Banners]
+ *     summary: Get all blogs
+ *     tags: [Blogs]
  *     responses:
  *       200:
- *         description: List of banners
+ *         description: List of blogs
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Banner'
+ *                 $ref: '#/components/schemas/Blog'
  *       500:
  *         description: Internal server error
  *
  *   post:
- *     summary: Create a new banner
- *     tags: [Banners]
+ *     summary: Create a new blog
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -94,25 +84,26 @@ module.exports = router;
  *             required:
  *               - title
  *               - description
- *               - tag
+ *               - tags
  *               - image
  *             properties:
  *               title:
  *                 type: string
  *               description:
  *                 type: string
- *               tag:
+ *               tags:
  *                 type: string
+ *                 description: Comma-separated list of tags
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       200:
- *         description: Banner created
+ *         description: Blog created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Banner'
+ *               $ref: '#/components/schemas/Blog'
  *       400:
  *         description: Bad request
  *       500:
@@ -121,41 +112,43 @@ module.exports = router;
 
 /**
  * @swagger
- * /banners/{id}:
+ * /blogs/{id}:
  *   get:
- *     summary: Get banner by ID
- *     tags: [Banners]
+ *     summary: Get blog by ID
+ *     tags: [Blogs]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
  *         required: true
- *         description: Banner ID
+ *         description: Blog ID
  *     responses:
  *       200:
- *         description: Banner data
+ *         description: Blog data
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Banner'
+ *               $ref: '#/components/schemas/Blog'
  *       400:
  *         description: Invalid ID
  *       404:
- *         description: Banner not found
+ *         description: Blog not found
  *       500:
  *         description: Internal server error
  *
  *   put:
- *     summary: Update banner by ID
- *     tags: [Banners]
+ *     summary: Update blog by ID
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
  *         required: true
- *         description: Banner ID
+ *         description: Blog ID
  *     requestBody:
  *       required: true
  *       content:
@@ -165,44 +158,47 @@ module.exports = router;
  *             required:
  *               - title
  *               - description
- *               - tag
+ *               - tags
  *             properties:
  *               title:
  *                 type: string
  *               description:
  *                 type: string
- *               tag:
+ *               tags:
  *                 type: string
+ *                 description: Comma-separated list of tags
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       200:
- *         description: Banner updated
+ *         description: Blog updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Banner'
+ *               $ref: '#/components/schemas/Blog'
  *       400:
  *         description: Bad request
  *       404:
- *         description: Banner not found
+ *         description: Blog not found
  *       500:
  *         description: Internal server error
  *
  *   delete:
- *     summary: Delete banner by ID
- *     tags: [Banners]
+ *     summary: Delete blog by ID
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
  *         required: true
- *         description: Banner ID
+ *         description: Blog ID
  *     responses:
  *       200:
- *         description: Banner deleted
+ *         description: Blog deleted
  *         content:
  *           application/json:
  *             schema:
@@ -214,16 +210,16 @@ module.exports = router;
  *       400:
  *         description: Invalid ID
  *       404:
- *         description: Banner not found
+ *         description: Blog not found
  *       500:
  *         description: Internal server error
  */
 /**
  * @swagger
- * /banners/paginated:
+ * /blogs/paginated:
  *   get:
- *     summary: Get banners with pagination
- *     tags: [Banners]
+ *     summary: Get paginated blogs
+ *     tags: [Blogs]
  *     parameters:
  *       - in: query
  *         name: page
@@ -239,40 +235,27 @@ module.exports = router;
  *         description: Number of items per page
  *     responses:
  *       200:
- *         description: Paginated list of banners
+ *         description: Paginated list of blogs
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Banner'
+ *                     $ref: '#/components/schemas/Blog'
  *                 pagination:
  *                   type: object
  *                   properties:
- *                     totalItems:
+ *                     total:
  *                       type: integer
- *                       example: 42
+ *                     page:
+ *                       type: integer
+ *                     limit:
+ *                       type: integer
  *                     totalPages:
  *                       type: integer
- *                       example: 5
- *                     currentPage:
- *                       type: integer
- *                       example: 1
- *                     pageSize:
- *                       type: integer
- *                       example: 10
- *                     hasNextPage:
- *                       type: boolean
- *                       example: true
- *                     hasPrevPage:
- *                       type: boolean
- *                       example: false
  *       500:
  *         description: Internal server error
  */

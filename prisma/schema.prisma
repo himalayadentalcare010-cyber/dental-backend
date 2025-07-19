@@ -21,15 +21,15 @@ model Banner {
   publicId    String
   createdAt   DateTime @default(now())
 }
-
 model Blog {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   title       String
   description String
-  tag         String
+  tags        String[]
   image       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  publicId    String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model team {
@@ -37,6 +37,7 @@ model team {
   imageName String
   role      String
   name String
+  publicId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -47,7 +48,7 @@ model project {
   description String
   name        String
   link        String?
-
+  publicId    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -60,6 +61,7 @@ model Testimonial {
   role     String
   message  String
   image String
+  publicId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

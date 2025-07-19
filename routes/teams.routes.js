@@ -1,90 +1,79 @@
 const express = require('express');
 const router = express.Router();
+const controller = require('../controllers/teams.controller');
+const upload = require('../middlewares/upload.middleware');
 const { requireAuth } = require('../middlewares/auth.middleware');
 
-const controller = require('../controllers/banner.controller');
+router.get('/paginated', controller.getTeamsPaginated);
 
-const upload = require('../middlewares/upload.middleware');
-
-router.get('/paginated', controller.getPaginatedBanners);
-
-router.get('/', controller.getBanners);
-router.get('/:id', controller.getBanner);
-router.post('/', requireAuth, upload.single('image'), controller.createBanner);
-router.put('/:id', requireAuth, controller.updateBanner);
-router.delete('/:id', requireAuth, controller.deleteBanner);
+router.get('/', controller.getTeams);
+router.get('/:id', controller.getTeam);
+router.post('/', requireAuth, upload.single('image'), controller.createTeam);
+router.put('/:id', requireAuth, upload.single('image'), controller.updateTeam);
+router.delete('/:id', requireAuth, controller.deleteTeam);
 
 module.exports = router;
 
 /**
  * @swagger
  * components:
- *   securitySchemes:
- *     bearerAuth:
- *       type: http
- *       scheme: bearer
- *       bearerFormat: JWT
- *
- * security:
- *   - bearerAuth: []
- */
-
-/**
- * @swagger
- * components:
  *   schemas:
- *     Banner:
+ *     Team:
  *       type: object
  *       required:
- *         - title
- *         - description
- *         - tag
+ *         - name
+ *         - role
  *         - image
  *       properties:
  *         id:
  *           type: integer
- *           description: The auto-generated ID of the banner
- *         title:
+ *         name:
  *           type: string
- *           description: Banner title
- *         description:
+ *         role:
  *           type: string
- *           description: Banner description
- *         tag:
+ *         imageName:
  *           type: string
- *           description: Banner tag
- *         image:
+ *         publicId:
  *           type: string
- *           description: Filename of the banner image
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
  *       example:
  *         id: 1
- *         title: "Summer Sale"
- *         description: "Huge discounts on all items"
- *         tag: "sale"
- *         image: "banner1.jpg"
+ *         name: "John Doe"
+ *         role: "Developer"
+ *         imageName: "team-162889.jpg"
+ *         publicId: "teams/team-162889"
+ *         createdAt: "2025-07-19T12:34:56Z"
+ *         updatedAt: "2025-07-19T12:34:56Z"
  */
 
 /**
  * @swagger
- * /banners:
+ * /teams:
  *   get:
- *     summary: Get all banners
- *     tags: [Banners]
+ *     summary: Get all team members
+ *     tags: [Teams]
  *     responses:
  *       200:
- *         description: List of banners
+ *         description: List of team members
  *         content:
  *           application/json:
  *             schema:
  *               type: array
  *               items:
- *                 $ref: '#/components/schemas/Banner'
+ *                 $ref: '#/components/schemas/Team'
  *       500:
  *         description: Internal server error
  *
  *   post:
- *     summary: Create a new banner
- *     tags: [Banners]
+ *     summary: Create a team member
+ *     tags: [Teams]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -92,117 +81,105 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - title
- *               - description
- *               - tag
+ *               - name
+ *               - role
  *               - image
  *             properties:
- *               title:
+ *               name:
  *                 type: string
- *               description:
- *                 type: string
- *               tag:
+ *               role:
  *                 type: string
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       200:
- *         description: Banner created
+ *         description: Team member created
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Banner'
+ *               $ref: '#/components/schemas/Team'
  *       400:
  *         description: Bad request
  *       500:
  *         description: Internal server error
- */
-
-/**
- * @swagger
- * /banners/{id}:
+ *
+ * /teams/{id}:
  *   get:
- *     summary: Get banner by ID
- *     tags: [Banners]
+ *     summary: Get a team member by ID
+ *     tags: [Teams]
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
  *         required: true
- *         description: Banner ID
+ *         description: Team ID
  *     responses:
  *       200:
- *         description: Banner data
+ *         description: Team data
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Banner'
- *       400:
- *         description: Invalid ID
+ *               $ref: '#/components/schemas/Team'
  *       404:
- *         description: Banner not found
+ *         description: Team not found
  *       500:
  *         description: Internal server error
  *
  *   put:
- *     summary: Update banner by ID
- *     tags: [Banners]
+ *     summary: Update a team member
+ *     tags: [Teams]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
  *         required: true
- *         description: Banner ID
+ *         description: Team ID
  *     requestBody:
  *       required: true
  *       content:
  *         multipart/form-data:
  *           schema:
  *             type: object
- *             required:
- *               - title
- *               - description
- *               - tag
  *             properties:
- *               title:
+ *               name:
  *                 type: string
- *               description:
- *                 type: string
- *               tag:
+ *               role:
  *                 type: string
  *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       200:
- *         description: Banner updated
+ *         description: Team member updated
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Banner'
- *       400:
- *         description: Bad request
+ *               $ref: '#/components/schemas/Team'
  *       404:
- *         description: Banner not found
+ *         description: Team not found
  *       500:
  *         description: Internal server error
  *
  *   delete:
- *     summary: Delete banner by ID
- *     tags: [Banners]
+ *     summary: Delete a team member
+ *     tags: [Teams]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         schema:
  *           type: integer
  *         required: true
- *         description: Banner ID
+ *         description: Team ID
  *     responses:
  *       200:
- *         description: Banner deleted
+ *         description: Team member deleted
  *         content:
  *           application/json:
  *             schema:
@@ -211,68 +188,75 @@ module.exports = router;
  *                 success:
  *                   type: boolean
  *                   example: true
- *       400:
- *         description: Invalid ID
  *       404:
- *         description: Banner not found
+ *         description: Team not found
  *       500:
  *         description: Internal server error
  */
 /**
  * @swagger
- * /banners/paginated:
+ * /teams/paginated:
  *   get:
- *     summary: Get banners with pagination
- *     tags: [Banners]
+ *     summary: Get paginated list of team members
+ *     tags: [Teams]
  *     parameters:
  *       - in: query
  *         name: page
  *         schema:
  *           type: integer
+ *           minimum: 1
  *           default: 1
  *         description: Page number
  *       - in: query
- *         name: limit
+ *         name: pageSize
  *         schema:
  *           type: integer
+ *           minimum: 1
  *           default: 10
- *         description: Number of items per page
+ *         description: Number of teams per page
  *     responses:
  *       200:
- *         description: Paginated list of banners
+ *         description: Paginated list of teams
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
  *                 data:
  *                   type: array
  *                   items:
- *                     $ref: '#/components/schemas/Banner'
+ *                     $ref: '#/components/schemas/Team'
  *                 pagination:
  *                   type: object
  *                   properties:
- *                     totalItems:
+ *                     total:
  *                       type: integer
- *                       example: 42
- *                     totalPages:
+ *                       description: Total number of teams
+ *                     page:
  *                       type: integer
- *                       example: 5
- *                     currentPage:
- *                       type: integer
- *                       example: 1
+ *                       description: Current page number
  *                     pageSize:
  *                       type: integer
- *                       example: 10
- *                     hasNextPage:
- *                       type: boolean
- *                       example: true
- *                     hasPrevPage:
- *                       type: boolean
- *                       example: false
+ *                       description: Number of teams per page
+ *                     totalPages:
+ *                       type: integer
+ *                       description: Total number of pages
+ *       400:
+ *         description: Invalid query parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  *       500:
  *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
  */

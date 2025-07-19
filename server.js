@@ -1,4 +1,5 @@
-const express = require('express');const path = require('path');
+const express = require('express');
+const path = require('path');
 require('dotenv').config();
 const swaggerUi = require('swagger-ui-express');
 const swaggerSpec = require('./swagger');
@@ -22,11 +23,22 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // ───────────────────────────────
 // Routes
 
+const blogsRoutes = require('./routes/blogs.routes');
+const projectRoutes = require('./routes/banner.routes');
+
 const bannerRoutes = require('./routes/banner.routes');
 const authRoutes = require('./routes/auth.routes');
+const teamRoutes = require('./routes/teams.routes');
+const testimonialRoutes = require('./routes/testimonials.routes');
+const contactRoutes = require('./routes/contact.routes');
 
 app.use('/api/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
+app.use('/api/teams', teamRoutes);
 app.use('/api/banners', bannerRoutes);
+app.use('/api/blogs', blogsRoutes);
+app.use('/api/testimonials', testimonialRoutes);
+app.use('/api/contacts', contactRoutes);
 
 // ───────────────────────────────
 // Start the server

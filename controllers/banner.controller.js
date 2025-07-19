@@ -169,3 +169,43 @@ exports.deleteBanner = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+exports.getPaginatedBanners = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (page < 1 || limit < 1) {
+      return res.status(400).json({ error: 'Page and limit must be positive integers' });
+    }
+
+    const skip = (page - 1) * limit;
+
+    const [banners, total] = await Promise.all([
+      prisma.banner.findMany({
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+      }),
+      prisma.banner.count(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+
+    res.json({
+      success: true,
+      data: banners,
+      pagination: {
+        totalItems: total,
+        totalPages,
+        currentPage: page,
+        pageSize: limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    console.error('getPaginatedBanners error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
