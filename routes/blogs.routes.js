@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express');const router = express.Router();
 const { requireAuth } = require('../middlewares/auth.middleware');
 const upload = require('../middlewares/upload.middleware');
 
@@ -12,6 +11,7 @@ router.get('/:id', controller.getBlog);
 router.post('/', requireAuth, upload.single('image'), controller.createBlog);
 router.put('/:id', requireAuth, upload.single('image'), controller.updateBlog);
 router.delete('/:id', requireAuth, controller.deleteBlog);
+///hhhhhhhhhhhhhhhh
 
 module.exports = router;
 
