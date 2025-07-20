@@ -6,7 +6,12 @@ const swaggerSpec = require('./swagger');
 const cors = require('cors');
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: ['https://4gnepal.com.np', 'http://localhost:5173'], // allow both production and dev
+    credentials: true, // if you send cookies or auth headers
+  })
+);
 
 // ───────────────────────────────
 // Middleware
