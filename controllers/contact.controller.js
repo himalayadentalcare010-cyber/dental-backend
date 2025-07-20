@@ -1,5 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { PrismaClient } = require('@prisma/client');const prisma = new PrismaClient();
 exports.createContact = async (req, res) => {
   try {
     const { name, email, project, message } = req.body;
@@ -17,7 +16,11 @@ exports.createContact = async (req, res) => {
 // Get all contacts
 exports.getAllContacts = async (req, res) => {
   try {
-    const contacts = await prisma.contact.findMany();
+    const contacts = await prisma.contact.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     res.json(contacts);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch contacts', details: err.message });

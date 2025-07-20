@@ -11,7 +11,7 @@ router.get('/paginated', controller.getPaginatedBanners);
 router.get('/', controller.getBanners);
 router.get('/:id', controller.getBanner);
 router.post('/', requireAuth, upload.single('image'), controller.createBanner);
-router.put('/:id', requireAuth, controller.updateBanner);
+router.put('/:id', requireAuth, upload.single('image'), controller.updateBanner);
 router.delete('/:id', requireAuth, controller.deleteBanner);
 
 module.exports = router;

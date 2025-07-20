@@ -24,7 +24,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 // Routes
 
 const blogsRoutes = require('./routes/blogs.routes');
-const projectRoutes = require('./routes/banner.routes');
+const projectRoutes = require('./routes/project.routes');
 
 const bannerRoutes = require('./routes/banner.routes');
 const authRoutes = require('./routes/auth.routes');

@@ -1,5 +1,4 @@
-const sharp = require('sharp');
-const { PrismaClient } = require('@prisma/client');
+const sharp = require('sharp');const { PrismaClient } = require('@prisma/client');
 const cloudinary = require('../utils/cloudinary');
 const prisma = new PrismaClient();
 
@@ -36,7 +35,7 @@ exports.createTestimonial = async (req, res) => {
       return res.status(400).json({ error: 'Rating must be an integer between 0 and 5' });
     }
 
-    const buffer = await sharp(file.buffer).resize(800, 600).jpeg({ quality: 80 }).toBuffer();
+    const buffer = await sharp(file.buffer).resize(800, 600).jpeg({ quality: 40 }).toBuffer();
 
     const filename = `testimonial-${Date.now()}`;
     const cloudinaryRes = await uploadToCloudinary(buffer, filename);
@@ -61,7 +60,11 @@ exports.createTestimonial = async (req, res) => {
 
 exports.getTestimonials = async (_, res) => {
   try {
-    const testimonials = await prisma.testimonial.findMany();
+    const testimonials = await prisma.testimonial.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     res.json(testimonials);
   } catch (error) {
     console.error('getTestimonials error:', error);
@@ -80,7 +83,7 @@ exports.getTestimonialsPaginated = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const [testimonials, total] = await Promise.all([
-      prisma.testimonial.findMany({ skip, take: limit }),
+      prisma.testimonial.findMany({ skip, take: limit, orderBy: { createdAt: 'desc' } }),
       prisma.testimonial.count(),
     ]);
 

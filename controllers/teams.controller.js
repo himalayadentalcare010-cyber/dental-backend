@@ -32,7 +32,7 @@ exports.createTeam = async (req, res) => {
       return res.status(400).json({ error: 'Name and role are required' });
     }
 
-    const buffer = await sharp(file.buffer).resize(800, 600).jpeg({ quality: 80 }).toBuffer();
+    const buffer = await sharp(file.buffer).jpeg({ quality: 80 }).toBuffer();
 
     const filename = `team-${Date.now()}`;
     const cloudinaryRes = await uploadToCloudinary(buffer, filename);
@@ -55,7 +55,11 @@ exports.createTeam = async (req, res) => {
 
 exports.getTeams = async (_, res) => {
   try {
-    const teams = await prisma.team.findMany();
+    const teams = await prisma.team.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     res.json(teams);
   } catch (error) {
     console.error('getTeams error:', error);
@@ -93,7 +97,7 @@ exports.getTeamsPaginated = async (req, res) => {
 
     // Fetch paginated teams
     const [teams, totalCount] = await Promise.all([
-      prisma.team.findMany({ skip, take }),
+      prisma.team.findMany({ skip, take, orderBy: { createdAt: 'desc' } }),
       prisma.team.count(),
     ]);
 
@@ -130,7 +134,7 @@ exports.updateTeam = async (req, res) => {
     if (req.file) {
       if (publicId) await cloudinary.uploader.destroy(publicId).catch(() => {});
 
-      const buffer = await sharp(req.file.buffer).resize(800, 600).jpeg({ quality: 80 }).toBuffer();
+      const buffer = await sharp(req.file.buffer).jpeg({ quality: 80 }).toBuffer();
 
       const filename = `team-${Date.now()}`;
       const cloudinaryRes = await uploadToCloudinary(buffer, filename);

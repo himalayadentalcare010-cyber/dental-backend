@@ -1,5 +1,4 @@
-const sharp = require('sharp');
-const { PrismaClient } = require('@prisma/client');
+const sharp = require('sharp');const { PrismaClient } = require('@prisma/client');
 const cloudinary = require('../utils/cloudinary');
 const { sizePresets, qualityPresets } = require('../constant/constant');
 
@@ -36,16 +35,9 @@ exports.createBlog = async (req, res) => {
 
     const tagArray = typeof tags === 'string' ? tags.split(',').map((t) => t.trim()) : [];
 
-    const size = sizePresets['blog'] || {
-      width: parseInt(width) || 800,
-      height: parseInt(height) || 600,
-    };
     const quality = qualityPresets['blog'] || 80;
 
-    const buffer = await sharp(file.buffer)
-      .resize(size.width, size.height)
-      .jpeg({ quality })
-      .toBuffer();
+    const buffer = await sharp(file.buffer).jpeg({ quality }).toBuffer();
 
     const filename = `blog-${Date.now()}`;
     const cloudinaryRes = await uploadToCloudinary(buffer, filename);
@@ -69,7 +61,11 @@ exports.createBlog = async (req, res) => {
 
 exports.getBlogs = async (_, res) => {
   try {
-    const blogs = await prisma.blog.findMany();
+    const blogs = await prisma.blog.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     res.json(blogs);
   } catch (error) {
     console.error('getBlogs error:', error);
@@ -120,10 +116,7 @@ exports.updateBlog = async (req, res) => {
         height: parseInt(height) || 600,
       };
 
-      const buffer = await sharp(req.file.buffer)
-        .resize(size.width, size.height)
-        .jpeg({ quality: 80 })
-        .toBuffer();
+      const buffer = await sharp(req.file.buffer).jpeg({ quality: 80 }).toBuffer();
 
       const filename = `blog-${Date.now()}`;
       const cloudinaryRes = await uploadToCloudinary(buffer, filename);
@@ -186,7 +179,7 @@ exports.getPaginatedBlogs = async (req, res) => {
       prisma.blog.findMany({
         skip,
         take: limit,
-        orderBy: { id: 'desc' },
+        orderBy: { createdAt: 'desc' },
       }),
       prisma.blog.count(),
     ]);

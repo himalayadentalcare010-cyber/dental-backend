@@ -1,5 +1,4 @@
-const sharp = require('sharp');
-const { PrismaClient } = require('@prisma/client');
+const sharp = require('sharp');const { PrismaClient } = require('@prisma/client');
 const cloudinary = require('../utils/cloudinary');
 const prisma = new PrismaClient();
 
@@ -56,7 +55,11 @@ exports.createProject = async (req, res) => {
 
 exports.getProjects = async (_, res) => {
   try {
-    const projects = await prisma.project.findMany();
+    const projects = await prisma.project.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     res.json(projects);
   } catch (error) {
     console.error('getProjects error:', error);

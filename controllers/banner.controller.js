@@ -8,6 +8,23 @@ const prisma = new PrismaClient();
 
 const isValidString = (str) => typeof str === 'string' && str.trim().length > 0;
 
+const uploadToCloudinary = async (buffer, filename) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        resource_type: 'image',
+        folder: 'banners',
+        public_id: filename,
+      },
+      (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      }
+    );
+    stream.end(buffer);
+  });
+};
+
 exports.createBanner = async (req, res) => {
   try {
     const { title, description, tag, width, height } = req.body;
@@ -28,23 +45,6 @@ exports.createBanner = async (req, res) => {
       .resize(size.width, size.height)
       .jpeg({ quality: quality })
       .toBuffer();
-
-    const uploadToCloudinary = async (buffer, filename) => {
-      return new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {
-            resource_type: 'image',
-            folder: 'banners',
-            public_id: filename,
-          },
-          (err, result) => {
-            if (err) reject(err);
-            else resolve(result);
-          }
-        );
-        stream.end(buffer);
-      });
-    };
 
     const filename = `banner-${Date.now()}`;
     const cloudinaryRes = await uploadToCloudinary(buffer, filename);
@@ -68,7 +68,11 @@ exports.createBanner = async (req, res) => {
 
 exports.getBanners = async (_, res) => {
   try {
-    const banners = await prisma.banner.findMany();
+    const banners = await prisma.banner.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
     res.json(banners);
   } catch (error) {
     console.error('getBanners error:', error);
@@ -111,7 +115,7 @@ exports.updateBanner = async (req, res) => {
     let publicId = existing.publicId;
 
     if (req.file) {
-      // Delete old image from Cloudinary
+      // Delete old image from Cloudinary first
       if (publicId) {
         await cloudinary.uploader.destroy(publicId).catch(() => {});
       }
