@@ -8,7 +8,11 @@ const options = {
       description: 'API for managing banners',
     },
     servers: [
-      { url: process.env.IS_LOCAL ? process.env.IS_LOCAL : 'https://fourgnepal.onrender.com/api' },
+      {
+        url: process.env.IS_LOCAL
+          ? process.env.IS_LOCAL
+          : 'https://profound-dieffenbachia-1b44e3.netlify.app/api/',
+      },
     ],
     components: {
       securitySchemes: {
