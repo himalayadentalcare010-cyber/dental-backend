@@ -19,11 +19,11 @@ app.use(
 app.use(express.json()); // Parse JSON request bodies
 
 // Static file serving
-app.use('/public', express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/public', express.static(path.join(__dirname, 'public')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Swagger API Docs
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ───────────────────────────────
 // Routes
