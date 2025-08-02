@@ -37,7 +37,7 @@ const teamRoutes = require('./routes/teams.routes');
 const testimonialRoutes = require('./routes/testimonials.routes');
 const contactRoutes = require('./routes/contact.routes');
 
-app.use('/api/auth', authRoutes);
+app.use('/api', authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/banners', bannerRoutes);
