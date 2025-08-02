@@ -125,5 +125,5 @@ const controller = require('../controllers/auth.controller');
 
 router.post('/register', controller.register);
 router.post('/login', controller.login);
-
+router.get('/users', authenticateToken, controller.getAllUsers);
 module.exports = router;

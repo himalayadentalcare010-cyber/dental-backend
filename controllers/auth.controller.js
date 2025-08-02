@@ -1,4 +1,5 @@
-const { PrismaClient } = require('@prisma/client');const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('@prisma/client');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
@@ -65,4 +66,21 @@ exports.getMe = async (req, res) => {
     select: { id: true, name: true, email: true },
   });
   res.json(user);
+};
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error('GetAllUsers error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
 };
