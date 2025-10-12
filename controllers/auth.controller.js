@@ -47,7 +47,7 @@ exports.login = async (req, res) => {
 
   try {
     // 1️⃣ Find the user
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = { email, password }
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -70,8 +70,8 @@ exports.login = async (req, res) => {
     // 5️⃣ Return success
     res.status(200).json({
       message: 'Login successful',
-      user: { id: user.id, email: user.email, name: user.name || 'User' },
-      token,
+      // user: { id: user.id, email: user.email, name: user.name || 'User' },
+      // token,
     });
   } catch (error) {
     console.error('Login error:', error);
