@@ -43,15 +43,15 @@ exports.register = async (req, res) => {
 // LOGIN
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  console.log(email);
+  const user={id:"paras",name:"Paras Sigdel",email:"Paras@4gnepal.com", password:"Paras@123"}; // IGNORE
+
 
   try {
     // const user = await prisma.user.findUnique({ where: { email } });
-    const user={id:"paras",name:"Paras Sigdel",email:"Paras@4gnepal.com", password:"Paras@123"}; // IGNORE
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    // if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
     // const isMatch = await bcrypt.compare(password, user.password);
-    const isMatch = password === user.password; 
+    const isMatch = password === user.password && email===user.email; // IGNORE
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
     if (!JWT_SECRET) {
