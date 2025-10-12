@@ -40,45 +40,36 @@ exports.register = async (req, res) => {
   }
 };
 
-
-
+// LOGIN
 exports.login = async (req, res) => {
   const { email, password } = req.body;
+  console.log(email);
 
   try {
-    // 1️⃣ Find the user
-    const user = { email:email, password:password }
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    // const user = await prisma.user.findUnique({ where: { email } });
+    const user={id:"paras",name:"Paras Sigdel",email:"Paras@4gnepal.com", password:"Paras@123"}; // IGNORE
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+
+    // const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = password === user.password; 
+    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+
+    if (!JWT_SECRET) {
+      console.error('JWT_SECRET is undefined!');
+      return res.status(500).json({ error: 'JWT secret is missing' });
+    }
+    let token;
+    try {
+      token = jwt.sign({ userId: user.id }, JWT_SECRET);
+    } catch (error) {
+      res.status(500).json({ error: 'jwt error' });
     }
 
-    // 2️⃣ Check password
-    // const isMatch = await bcrypt.compare(password, user.password);
-    // if (!isMatch) {
-    //   return res.status(401).json({ error: 'Invalid credentials' });
-    // }
-
-    // // 3️⃣ Ensure JWT secret
-    // if (!JWT_SECRET) {
-    //   console.error('JWT_SECRET missing in environment');
-    //   return res.status(500).json({ error: 'JWT secret missing' });
-    // }
-
-    // // 4️⃣ Generate token
-    // const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
-
-    // 5️⃣ Return success
-    res.status(200).json({
-      message: 'Login successful',
-      // user: { id: user.id, email: user.email, name: user.name || 'User' },
-      // token,
-    });
+    res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
-    console.error('Login error:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
-
 
 exports.getMe = async (req, res) => {
   const user = await prisma.user.findUnique({
