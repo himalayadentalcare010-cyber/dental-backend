@@ -44,7 +44,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    // const user = await prisma.user.findUnique({ where: { email } });
     // if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
     // const isMatch = await bcrypt.compare(password, user.password);
@@ -61,7 +61,7 @@ exports.login = async (req, res) => {
     //   res.status(500).json({ error: 'jwt error' });
     // }
 
-    res.status(200).json({ token:"sitaram", user: { id: user.id, name: user.name, email: user.email } });
+    res.status(201).json({ message:"sitaram" });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
