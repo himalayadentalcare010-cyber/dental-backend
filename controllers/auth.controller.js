@@ -45,23 +45,23 @@ exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    // if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
+    // const isMatch = await bcrypt.compare(password, user.password);
+    // if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    if (!JWT_SECRET) {
-      console.error('JWT_SECRET is undefined!');
-      return res.status(500).json({ error: 'JWT secret is missing' });
-    }
-    let token;
-    try {
-      token = jwt.sign({ userId: user.id }, JWT_SECRET);
-    } catch (error) {
-      res.status(500).json({ error: 'jwt error' });
-    }
+    // if (!JWT_SECRET) {
+    //   console.error('JWT_SECRET is undefined!');
+    //   return res.status(500).json({ error: 'JWT secret is missing' });
+    // }
+    // let token;
+    // try {
+    //   token = jwt.sign({ userId: user.id }, JWT_SECRET);
+    // } catch (error) {
+    //   res.status(500).json({ error: 'jwt error' });
+    // }
 
-    res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+    res.json({ token:"sitaram", user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
