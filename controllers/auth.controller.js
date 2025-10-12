@@ -61,7 +61,7 @@ exports.login = async (req, res) => {
     //   res.status(500).json({ error: 'jwt error' });
     // }
 
-    res.json({ token:"sitaram", user: { id: user.id, name: user.name, email: user.email } });
+    res.status(200).json({ token:"sitaram", user: { id: user.id, name: user.name, email: user.email } });
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }
