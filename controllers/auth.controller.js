@@ -44,7 +44,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   try {
-     const user = await prisma.user.findUniqueOrThrow({ where: { email } });
+     const user = await prisma.user.findMany();
     //  if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
     // const isMatch = await bcrypt.compare(password, user.password);
