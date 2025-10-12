@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');const prisma = new PrismaClient();
 exports.createContact = async (req, res) => {
   try {
-    const { name, email, project, message } = req.body;
+    const { name, email, project, message } = JSON(req.body||'{}');
 
     const contact = await prisma.contact.create({
       data: { name, email, project, message },
