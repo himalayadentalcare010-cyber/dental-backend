@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
 
 // LOGIN
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = JSON.parse(req.body || '{}');
   const user={id:"paras",name:"Paras Sigdel",email:"Paras@4gnepal.com", password:"Paras@123"}; // IGNORE
 
 
