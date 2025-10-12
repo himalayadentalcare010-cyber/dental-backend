@@ -42,17 +42,15 @@ exports.register = async (req, res) => {
 
 // LOGIN
 exports.login = async (req, res) => {
-  const { email, password } = JSON.parse(req.body || '{}');
-  const user={id:"paras",name:"Paras Sigdel",email:"Paras@4gnepal.com", password:"Paras@123"}; // IGNORE
-
+  const { email, password } = JSON.parse(req.body || '{}'); ;
+  console.log(email);
 
   try {
-    // const user = await prisma.user.findUnique({ where: { email } });
-    // if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
-    // const isMatch = await bcrypt.compare(password, user.password);
-    const isMatch = password === user.password && email===user.email; // IGNORE
-    if (!isMatch) return res.status(401).json({ error:  { email:email, password:password } });
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
     if (!JWT_SECRET) {
       console.error('JWT_SECRET is undefined!');
