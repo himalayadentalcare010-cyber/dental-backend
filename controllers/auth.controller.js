@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
 
     // const isMatch = await bcrypt.compare(password, user.password);
     const isMatch = password === user.password && email===user.email; // IGNORE
-    if (!isMatch) return res.status(401).json({ error: req.body });
+    if (!isMatch) return res.status(401).json({ error:  { email:email, password:password } });
 
     if (!JWT_SECRET) {
       console.error('JWT_SECRET is undefined!');
