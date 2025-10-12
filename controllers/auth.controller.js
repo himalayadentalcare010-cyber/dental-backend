@@ -58,14 +58,14 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // 3️⃣ Ensure JWT secret
-    if (!JWT_SECRET) {
-      console.error('JWT_SECRET missing in environment');
-      return res.status(500).json({ error: 'JWT secret missing' });
-    }
+    // // 3️⃣ Ensure JWT secret
+    // if (!JWT_SECRET) {
+    //   console.error('JWT_SECRET missing in environment');
+    //   return res.status(500).json({ error: 'JWT secret missing' });
+    // }
 
-    // 4️⃣ Generate token
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
+    // // 4️⃣ Generate token
+    // const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     // 5️⃣ Return success
     res.status(200).json({
