@@ -8,11 +8,11 @@ const cors = require('cors');
 const app = express();
 app.use(
   cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: ['https://4gnepal.com.np', 'http://localhost:5173'], // allow both production and dev
+    credentials: true, // if you send cookies or auth headers
   })
 );
+
 // ───────────────────────────────
 // Middleware
 // ───────────────────────────────
