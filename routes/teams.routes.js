@@ -1,16 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const controller = require('../controllers/teams.controller');
-const upload = require('../middlewares/upload.middleware');
-const { requireAuth } = require('../middlewares/auth.middleware');
+const controller = require("../controllers/teams.controller");
+const upload = require("../middlewares/upload.middleware");
+const { requireAuth } = require("../middlewares/auth.middleware");
 
-router.get('/paginated', controller.getTeamsPaginated);
-
-router.get('/', controller.getTeams);
-router.get('/:id', controller.getTeam);
-router.post('/', requireAuth, upload.single('image'), controller.createTeam);
-router.put('/:id', requireAuth, upload.single('image'), controller.updateTeam);
-router.delete('/:id', requireAuth, controller.deleteTeam);
+// 📄 Routes
+router.get("/paginated", controller.getTeamsPaginated);
+router.get("/", controller.getTeams);
+router.get("/:id", controller.getTeam);
+router.post("/", requireAuth, upload.single("image"), controller.createTeam);
+router.put("/:id", requireAuth, upload.single("image"), controller.updateTeam);
+router.delete("/:id", requireAuth, controller.deleteTeam);
 
 module.exports = router;
 
@@ -29,26 +29,42 @@ module.exports = router;
  *           type: integer
  *         name:
  *           type: string
+ *           example: "John Doe"
  *         role:
  *           type: string
+ *           example: "Developer"
  *         imageName:
  *           type: string
+ *           example: "https://res.cloudinary.com/demo/image/upload/v162889/team-162889.jpg"
  *         publicId:
  *           type: string
+ *           example: "teams/team-162889"
+ *         mobile:
+ *           type: string
+ *           nullable: true
+ *           example: "+9779812345678"
+ *         facebook:
+ *           type: string
+ *           nullable: true
+ *           example: "https://facebook.com/johndoe"
+ *         linkedin:
+ *           type: string
+ *           nullable: true
+ *           example: "https://linkedin.com/in/johndoe"
+ *         instagram:
+ *           type: string
+ *           nullable: true
+ *           example: "https://instagram.com/johndoe"
+ *         twitter:
+ *           type: string
+ *           nullable: true
+ *           example: "https://twitter.com/johndoe"
  *         createdAt:
  *           type: string
  *           format: date-time
  *         updatedAt:
  *           type: string
  *           format: date-time
- *       example:
- *         id: 1
- *         name: "John Doe"
- *         role: "Developer"
- *         imageName: "team-162889.jpg"
- *         publicId: "teams/team-162889"
- *         createdAt: "2025-07-19T12:34:56Z"
- *         updatedAt: "2025-07-19T12:34:56Z"
  */
 
 /**
@@ -87,14 +103,31 @@ module.exports = router;
  *             properties:
  *               name:
  *                 type: string
+ *                 example: "Jane Doe"
  *               role:
  *                 type: string
+ *                 example: "Designer"
  *               image:
  *                 type: string
  *                 format: binary
+ *               mobile:
+ *                 type: string
+ *                 example: "+9779800000000"
+ *               facebook:
+ *                 type: string
+ *                 example: "https://facebook.com/janedoe"
+ *               linkedin:
+ *                 type: string
+ *                 example: "https://linkedin.com/in/janedoe"
+ *               instagram:
+ *                 type: string
+ *                 example: "https://instagram.com/janedoe"
+ *               twitter:
+ *                 type: string
+ *                 example: "https://twitter.com/janedoe"
  *     responses:
  *       200:
- *         description: Team member created
+ *         description: Team member created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -117,7 +150,7 @@ module.exports = router;
  *         description: Team ID
  *     responses:
  *       200:
- *         description: Team data
+ *         description: Team member data
  *         content:
  *           application/json:
  *             schema:
@@ -148,14 +181,31 @@ module.exports = router;
  *             properties:
  *               name:
  *                 type: string
+ *                 example: "Jane Doe"
  *               role:
  *                 type: string
+ *                 example: "Lead Designer"
  *               image:
  *                 type: string
  *                 format: binary
+ *               mobile:
+ *                 type: string
+ *                 example: "+9779800000000"
+ *               facebook:
+ *                 type: string
+ *                 example: "https://facebook.com/janedoe"
+ *               linkedin:
+ *                 type: string
+ *                 example: "https://linkedin.com/in/janedoe"
+ *               instagram:
+ *                 type: string
+ *                 example: "https://instagram.com/janedoe"
+ *               twitter:
+ *                 type: string
+ *                 example: "https://twitter.com/janedoe"
  *     responses:
  *       200:
- *         description: Team member updated
+ *         description: Team member updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -179,7 +229,7 @@ module.exports = router;
  *         description: Team ID
  *     responses:
  *       200:
- *         description: Team member deleted
+ *         description: Team member deleted successfully
  *         content:
  *           application/json:
  *             schema:
@@ -193,6 +243,7 @@ module.exports = router;
  *       500:
  *         description: Internal server error
  */
+
 /**
  * @swagger
  * /teams/paginated:
@@ -231,32 +282,14 @@ module.exports = router;
  *                   properties:
  *                     total:
  *                       type: integer
- *                       description: Total number of teams
  *                     page:
  *                       type: integer
- *                       description: Current page number
  *                     pageSize:
  *                       type: integer
- *                       description: Number of teams per page
  *                     totalPages:
  *                       type: integer
- *                       description: Total number of pages
  *       400:
  *         description: Invalid query parameters
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
  *       500:
  *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
  */
