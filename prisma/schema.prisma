@@ -33,14 +33,20 @@ model Blog {
 }
 
 model team {
-  id        Int      @id @default(autoincrement())
-  imageName String
-  role      String
-  name String
+  id          Int      @id @default(autoincrement())
+  imageName   String
+  role        String
+  name        String
   publicId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  mobile      String?   // optional field for mobile number
+  facebook    String?   // optional field for Facebook link
+  linkedin    String?   // optional field for LinkedIn link
+  instagram   String?   // optional field for Instagram link
+  twitter     String?   // optional field for Twitter link
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
+
 
 model project {
   id          Int      @id @default(autoincrement())
