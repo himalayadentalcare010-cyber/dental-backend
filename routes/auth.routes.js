@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const controller = require('../controllers/auth.controller');
+const controller = require("../controllers/auth.controller");
 
 /**
  * @swagger
@@ -42,7 +42,7 @@ const controller = require('../controllers/auth.controller');
  *           example: strongpassword123
  *         secretKey:
  *           type: string
- *           example:  hbGciOiJIUzI1NiIsInR5cCI6IkpX
+ *           example: parasdai
  *
  *     AuthResponse:
  *       type: object
@@ -62,6 +62,31 @@ const controller = require('../controllers/auth.controller');
  *             name:
  *               type: string
  *               example: John Doe
+ *
+ *     ChangePasswordInput:
+ *       type: object
+ *       required:
+ *         - oldPassword
+ *         - newPassword
+ *         - secretKey
+ *       properties:
+ *         oldPassword:
+ *           type: string
+ *           format: password
+ *           example: oldPassword123
+ *         newPassword:
+ *           type: string
+ *           format: password
+ *           example: newPassword456
+ *         secretKey:
+ *           type: string
+ *           example: parasdai
+ *
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  */
 
 /**
@@ -123,7 +148,50 @@ const controller = require('../controllers/auth.controller');
  *         description: Internal server error
  */
 
-router.post('/register', controller.register);
-router.post('/login', controller.login);
-router.get('/users', controller.getAllUsers);
+/**
+ * @swagger
+ * /auth/users:
+ *   get:
+ *     summary: Get all users (admin or dev use)
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: List of users
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /auth/change-password:
+ *   post:
+ *     summary: Change the password of the logged-in user (requires secretKey)
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ChangePasswordInput'
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       400:
+ *         description: Old password is incorrect
+ *       403:
+ *         description: Invalid secret key
+ *       401:
+ *         description: Unauthorized (invalid or missing token)
+ *       500:
+ *         description: Internal server error
+ */
+
+// Routes
+router.post("/register", controller.register);
+router.post("/login", controller.login);
+router.get("/users", controller.getAllUsers);
+router.post("/change-password", controller.changePassword);
+
 module.exports = router;
