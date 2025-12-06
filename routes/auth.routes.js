@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const controller = require('../controllers/auth.controller');
+const controller = require("../controllers/auth.controller");
 
 /**
  * @swagger
@@ -123,7 +123,7 @@ const controller = require('../controllers/auth.controller');
  *         description: Internal server error
  */
 
-router.post('/register', controller.register);
-router.post('/login', controller.login);
-router.get('/users', controller.getAllUsers);
+router.post("/auth/register", controller.register);
+router.post("/auth/login", controller.login);
+router.get("/auth/users", controller.getAllUsers);
 module.exports = router;
