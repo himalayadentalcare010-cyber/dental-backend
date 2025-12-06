@@ -11,8 +11,8 @@ app.use(
     origin: [
       "https://4gnepal.com.np",
       "http://localhost:5173",
-      "http://4gnepal.com",
-      "https://4gnepal.com",
+      "https://www.himalayadentalcare.com.np",
+      "https://www.himalayadentalcare.com",
     ], // allow both production and dev
     credentials: true, // if you send cookies or auth headers
   })
