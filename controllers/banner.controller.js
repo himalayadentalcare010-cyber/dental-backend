@@ -27,27 +27,27 @@ const uploadToCloudinary = async (buffer, filename) => {
 
 exports.createBanner = async (req, res) => {
   try {
-    const files = req.files; // <— IMPORTANT
+    const files = req.files;
+
     if (!files || files.length === 0) {
       return res.status(400).json({ error: "Images required" });
     }
 
-    const quality = qualityPresets[tag] || 80;
-
     const createdBanners = [];
 
-    // loop through all files
     for (const file of files) {
-      const buffer = await sharp(file.buffer).jpeg({ quality }).toBuffer();
+      const buffer = await sharp(file.buffer)
+        .jpeg({ quality: 80 }) // fixed quality
+        .toBuffer();
 
-      const filename = `banner-${Date.now()}-${Math.random()}`;
+      const filename = `banner-${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 8)}`;
+
       const cloudinaryRes = await uploadToCloudinary(buffer, filename);
 
       const banner = await prisma.banner.create({
         data: {
-          title,
-          description,
-          tag,
           image: cloudinaryRes.secure_url,
           publicId: cloudinaryRes.public_id,
         },
@@ -56,14 +56,14 @@ exports.createBanner = async (req, res) => {
       createdBanners.push(banner);
     }
 
-    res.json({
+    return res.json({
       success: true,
       message: "Banners uploaded successfully",
       data: createdBanners,
     });
   } catch (error) {
     console.error("createBanner error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 
