@@ -42,7 +42,6 @@ exports.createBanner = async (req, res) => {
     const quality = qualityPresets[tag] || 80;
 
     const buffer = await sharp(file.buffer)
-      .resize(size.width, size.height)
       .jpeg({ quality: quality })
       .toBuffer();
 
@@ -126,7 +125,6 @@ exports.updateBanner = async (req, res) => {
       };
 
       const buffer = await sharp(req.file.buffer)
-        .resize(size.width, size.height)
         .jpeg({ quality: 80 })
         .toBuffer();
 
