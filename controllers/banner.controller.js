@@ -27,44 +27,40 @@ const uploadToCloudinary = async (buffer, filename) => {
 
 exports.createBanner = async (req, res) => {
   try {
-    const { title, description, tag, width, height } = req.body;
-    const file = req.file;
-
-    if (!file) return res.status(400).json({ error: "Image required" });
-    if (
-      !isValidString(title) ||
-      !isValidString(description) ||
-      !isValidString(tag)
-    ) {
-      return res
-        .status(400)
-        .json({ error: "Title, description, and tag are required" });
+    const files = req.files; // <— IMPORTANT
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: "Images required" });
     }
 
-    const size = sizePresets[tag] || {
-      width: parseInt(width) || 800,
-      height: parseInt(height) || 400,
-    };
     const quality = qualityPresets[tag] || 80;
 
-    const buffer = await sharp(file.buffer)
-      .jpeg({ quality: quality })
-      .toBuffer();
+    const createdBanners = [];
 
-    const filename = `banner-${Date.now()}`;
-    const cloudinaryRes = await uploadToCloudinary(buffer, filename);
+    // loop through all files
+    for (const file of files) {
+      const buffer = await sharp(file.buffer).jpeg({ quality }).toBuffer();
 
-    const banner = await prisma.banner.create({
-      data: {
-        title,
-        description,
-        tag,
-        image: cloudinaryRes.secure_url,
-        publicId: cloudinaryRes.public_id,
-      },
+      const filename = `banner-${Date.now()}-${Math.random()}`;
+      const cloudinaryRes = await uploadToCloudinary(buffer, filename);
+
+      const banner = await prisma.banner.create({
+        data: {
+          title,
+          description,
+          tag,
+          image: cloudinaryRes.secure_url,
+          publicId: cloudinaryRes.public_id,
+        },
+      });
+
+      createdBanners.push(banner);
+    }
+
+    res.json({
+      success: true,
+      message: "Banners uploaded successfully",
+      data: createdBanners,
     });
-
-    res.json(banner);
   } catch (error) {
     console.error("createBanner error:", error);
     res.status(500).json({ error: "Internal server error" });

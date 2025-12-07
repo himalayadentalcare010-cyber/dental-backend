@@ -1,18 +1,28 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { requireAuth } = require('../middlewares/auth.middleware');
+const { requireAuth } = require("../middlewares/auth.middleware");
 
-const controller = require('../controllers/banner.controller');
+const controller = require("../controllers/banner.controller");
 
-const upload = require('../middlewares/upload.middleware');
+const upload = require("../middlewares/upload.middleware");
 
-router.get('/paginated', controller.getPaginatedBanners);
+router.get("/paginated", controller.getPaginatedBanners);
 
-router.get('/', controller.getBanners);
-router.get('/:id', controller.getBanner);
-router.post('/', requireAuth, upload.single('image'), controller.createBanner);
-router.put('/:id', requireAuth, upload.single('image'), controller.updateBanner);
-router.delete('/:id', requireAuth, controller.deleteBanner);
+router.get("/", controller.getBanners);
+router.get("/:id", controller.getBanner);
+router.post(
+  "/",
+  requireAuth,
+  upload.array("images", 20),
+  controller.createBanner
+);
+router.put(
+  "/:id",
+  requireAuth,
+  upload.single("image"),
+  controller.updateBanner
+);
+router.delete("/:id", requireAuth, controller.deleteBanner);
 
 module.exports = router;
 
