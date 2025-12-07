@@ -1,19 +1,19 @@
-const path = require('path');
-const sharp = require('sharp');
-const { PrismaClient } = require('@prisma/client');
-const cloudinary = require('../utils/cloudinary');
-const { sizePresets, qualityPresets } = require('../constant/constant');
+const path = require("path");
+const sharp = require("sharp");
+const { PrismaClient } = require("@prisma/client");
+const cloudinary = require("../utils/cloudinary");
+const { sizePresets, qualityPresets } = require("../constant/constant");
 
 const prisma = new PrismaClient();
 
-const isValidString = (str) => typeof str === 'string' && str.trim().length > 0;
+const isValidString = (str) => typeof str === "string" && str.trim().length > 0;
 
 const uploadToCloudinary = async (buffer, filename) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
-        resource_type: 'image',
-        folder: 'banners',
+        resource_type: "image",
+        folder: "banners",
         public_id: filename,
       },
       (err, result) => {
@@ -30,9 +30,15 @@ exports.createBanner = async (req, res) => {
     const { title, description, tag, width, height } = req.body;
     const file = req.file;
 
-    if (!file) return res.status(400).json({ error: 'Image required' });
-    if (!isValidString(title) || !isValidString(description) || !isValidString(tag)) {
-      return res.status(400).json({ error: 'Title, description, and tag are required' });
+    if (!file) return res.status(400).json({ error: "Image required" });
+    if (
+      !isValidString(title) ||
+      !isValidString(description) ||
+      !isValidString(tag)
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Title, description, and tag are required" });
     }
 
     const size = sizePresets[tag] || {
@@ -60,8 +66,8 @@ exports.createBanner = async (req, res) => {
 
     res.json(banner);
   } catch (error) {
-    console.error('createBanner error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("createBanner error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -69,20 +75,20 @@ exports.getBanners = async (_, res) => {
   try {
     const banners = await prisma.banner.findMany({
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
     res.json(banners);
   } catch (error) {
-    console.error('getBanners error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("getBanners error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 exports.getBanner = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
 
     const banner = await prisma.banner.findUniqueOrThrow({
       where: { id },
@@ -90,22 +96,28 @@ exports.getBanner = async (req, res) => {
 
     res.json(banner);
   } catch (error) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Banner not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Banner not found" });
     }
-    console.error('getBanner error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("getBanner error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 exports.updateBanner = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
 
     const { title, description, tag, width, height } = req.body;
-    if (!isValidString(title) || !isValidString(description) || !isValidString(tag)) {
-      return res.status(400).json({ error: 'Title, description, and tag are required' });
+    if (
+      !isValidString(title) ||
+      !isValidString(description) ||
+      !isValidString(tag)
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Title, description, and tag are required" });
     }
 
     const existing = await prisma.banner.findUniqueOrThrow({ where: { id } });
@@ -142,18 +154,18 @@ exports.updateBanner = async (req, res) => {
 
     res.json(updated);
   } catch (error) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Banner not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Banner not found" });
     }
-    console.error('updateBanner error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("updateBanner error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
 exports.deleteBanner = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' });
+    if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
 
     const banner = await prisma.banner.findUniqueOrThrow({ where: { id } });
 
@@ -164,11 +176,11 @@ exports.deleteBanner = async (req, res) => {
     await prisma.banner.delete({ where: { id } });
     res.json({ success: true });
   } catch (error) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ error: 'Banner not found' });
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "Banner not found" });
     }
-    console.error('deleteBanner error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("deleteBanner error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };
 
@@ -178,7 +190,9 @@ exports.getPaginatedBanners = async (req, res) => {
     const limit = parseInt(req.query.limit) || 10;
 
     if (page < 1 || limit < 1) {
-      return res.status(400).json({ error: 'Page and limit must be positive integers' });
+      return res
+        .status(400)
+        .json({ error: "Page and limit must be positive integers" });
     }
 
     const skip = (page - 1) * limit;
@@ -187,7 +201,7 @@ exports.getPaginatedBanners = async (req, res) => {
       prisma.banner.findMany({
         skip,
         take: limit,
-        orderBy: { createdAt: 'desc' },
+        orderBy: { createdAt: "desc" },
       }),
       prisma.banner.count(),
     ]);
@@ -207,7 +221,7 @@ exports.getPaginatedBanners = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('getPaginatedBanners error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error("getPaginatedBanners error:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 };

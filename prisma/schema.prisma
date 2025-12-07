@@ -13,14 +13,13 @@ datasource db {
 }
 
 model Banner {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  tag         String
-  image       String
-  publicId    String
-  createdAt   DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  image     String
+  publicId  String
+  createdAt DateTime @default(now())
 }
+
+
 model Blog {
   id          Int       @id @default(autoincrement())
   title       String
